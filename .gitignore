@@ -9,5 +9,5 @@
 *.tfstate.*
 
 # variable files
-*.tfvars
-*.tfvars.json
+# *.tfvars
+# *.tfvars.json
