@@ -1,1 +1,13 @@
 .DS_Store
+
+# binary files, terraform folders
+.terraform/
+.terraform.lock.hcl
+
+# state files
+*.tfstate
+*.tfstate.*
+
+# variable files
+*.tfvars
+*.tfvars.json
