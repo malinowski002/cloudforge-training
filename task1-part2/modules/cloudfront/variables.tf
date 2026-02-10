@@ -7,3 +7,9 @@ variable "s3_bucket_origin_domain_name" {
     description = "S3 bucket domain name"
     type = string
 }
+
+variable "web_acl_id" {
+    description = "WAF ARN"
+    type = string
+    default = null
+}

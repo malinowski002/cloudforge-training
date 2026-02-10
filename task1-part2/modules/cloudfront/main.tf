@@ -15,6 +15,7 @@ resource "aws_cloudfront_distribution" "this" {
 
     enabled = true
     is_ipv6_enabled = true
+    web_acl_id = var.web_acl_id
     default_root_object = "index.html"
 
     default_cache_behavior {
