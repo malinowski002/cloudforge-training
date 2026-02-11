@@ -54,6 +54,7 @@ resource "aws_sns_topic_subscription" "email_alerts" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
+  provider            = aws.us_east_1
   alarm_name          = "WAF-blocked-requests-threshold"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
