@@ -1,5 +1,10 @@
 resource "aws_s3_bucket" "this" {
     bucket = var.bucket_name
+
+    tags = {
+        Environment = "production"
+        Project     = "static-website"
+    }
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
