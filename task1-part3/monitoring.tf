@@ -66,7 +66,6 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
 
   dimensions = {
     WebACL = "static-website-waf"
-    Region = "Global"
     Rule   = "ALL"
   }
 
