@@ -43,6 +43,16 @@ resource "aws_cloudwatch_dashboard" "main" {
   })
 }
 
+resource "aws_sns_topic" "alerts" {
+  name = "waf-alerts-topic"
+}
+
+resource "aws_sns_topic_subscription" "email_alerts" {
+  topic_arn = aws_sns_topic.alerts.arn
+  protocol  = "email"
+  endpoint  = "malinowski002cloudforge@gmail.com"
+}
+
 resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   alarm_name          = "WAF-blocked-requests-threshold"
   comparison_operator = "GreaterThanThreshold"
@@ -58,4 +68,6 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
     WebACL = module.waf.web_acl_name
     Region = "Global"
   }
+
+  alarm_actions = [aws_sns_topic.alerts.arn]
 }
