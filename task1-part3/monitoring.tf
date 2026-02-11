@@ -43,13 +43,14 @@ resource "aws_cloudwatch_dashboard" "main" {
   })
 }
 
-resource "aws_sns_topic" "alerts" {
+resource "aws_sns_topic" "alerts_v2" {
   provider = aws.us_east_1
   name     = "waf-alerts-topic-v2"
 }
 
 resource "aws_sns_topic_subscription" "email_alerts" {
-  topic_arn = aws_sns_topic.alerts.arn
+  provider = aws.us_east_1
+  topic_arn = aws_sns_topic.alerts_v2.arn
   protocol  = "email"
   endpoint  = "malinowski002cloudforge@gmail.com"
 }
@@ -72,5 +73,5 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   }
 
   treat_missing_data = "notBreaching"
-  alarm_actions      = [aws_sns_topic.alerts.arn]
+  alarm_actions      = [aws_sns_topic.alerts_v2.arn]
 }
