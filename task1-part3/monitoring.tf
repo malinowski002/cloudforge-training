@@ -68,6 +68,7 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   dimensions = {
     WebACL = "static-website-waf"
     Rule   = "ALL"
+    Region = "Global"
   }
 
   treat_missing_data = "notBreaching"
