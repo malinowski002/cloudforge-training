@@ -22,6 +22,15 @@ resource "aws_s3_bucket" "logs" {
     bucket = "${var.bucket_name}-logs"
 }
 
+resource "aws_s3_bucket_public_access_block" "logs" {
+    bucket = aws_s3_bucket.logs.id
+
+    block_public_acls = false
+    ignore_public_acls = false
+    block_public_policy = true
+    restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_ownership_controls" "logs"{
     bucket = aws_s3_bucket.logs.id
     rule {
