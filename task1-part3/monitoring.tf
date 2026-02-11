@@ -45,7 +45,7 @@ resource "aws_cloudwatch_dashboard" "main" {
 
 resource "aws_sns_topic" "alerts" {
   provider = aws.us_east_1
-  name     = "waf-alerts-topic"
+  name     = "waf-alerts-topic-v2"
 }
 
 resource "aws_sns_topic_subscription" "email_alerts" {
