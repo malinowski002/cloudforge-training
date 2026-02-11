@@ -1,1 +1,1 @@
-bucket_name = "kacper-task1-part2-bucket"
+bucket_name = "kacper-task1-part3-bucket"

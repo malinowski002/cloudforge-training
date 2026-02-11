@@ -45,4 +45,28 @@ resource "aws_cloudfront_distribution" "this" {
     viewer_certificate {
         cloudfront_default_certificate = true
     }
+
+    logging_config {
+        include_cookies = false
+        bucket = var.logs_bucket_domain_name
+        prefix = "cf-logs/"
+    }
+
+    custom_error_response {
+        error_code = 403
+        response_code = 403
+        response_page_path = "/error4xx.html"
+    }
+
+    custom_error_response {
+        error_code = 404
+        response_code = 404
+        response_page_path = "/error4xx.html"
+    }
+
+    custom_error_response {
+        error_code = 500
+        response_code = 500
+        response_page_path = "/error5xx.html"
+    }
 }

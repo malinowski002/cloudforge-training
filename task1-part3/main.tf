@@ -14,6 +14,7 @@ module "cloudfront" {
     source = "./modules/cloudfront"
     s3_bucket_id = module.s3.bucket_id
     s3_bucket_origin_domain_name = module.s3.bucket_regional_domain_name
+    logs_bucket_domain_name = module.s3.logs_bucket_domain_name
     web_acl_id = module.waf.waf_acl_arn
 }
 
@@ -42,5 +43,19 @@ resource "aws_s3_object" "index" {
     bucket = module.s3.bucket_id
     key = "index.html"
     source = "index.html"
+    content_type = "text/html"
+}
+
+resource "aws_s3_object" "error_4xx" {
+    bucket = module.s3.bucket_id
+    key = "error4xx.html"
+    source = "error4xx.html"
+    content_type = "text/html"
+}
+
+resource "aws_s3_object" "error_5xx" {
+    bucket = module.s3.bucket_id
+    key = "error5xx.html"
+    source = "error5xx.html"
     content_type = "text/html"
 }
