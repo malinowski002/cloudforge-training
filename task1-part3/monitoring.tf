@@ -67,6 +67,7 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   dimensions = {
     WebACL = module.waf.web_acl_name
     Region = "Global"
+    Rule = "ALL"
   }
 
   alarm_actions = [aws_sns_topic.alerts.arn]
