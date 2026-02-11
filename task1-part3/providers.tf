@@ -1,4 +1,5 @@
 terraform {
+  required_version = ">= 1.5.0"
   cloud {
 
     organization = "cloudforge-training"
@@ -17,7 +18,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-north-1"
+  region = var.aws_region
 
   default_tags {
     tags = {
