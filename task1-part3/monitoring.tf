@@ -30,10 +30,10 @@ resource "aws_cloudwatch_dashboard" "main" {
                 height = 6
                 properties = {
                     metrics = [
-                        ["AWS/WAFV2", "AllowedRequests", "WebACL", module.waf.web_acl_name, "Region", "Global", "Rule", "ALL"],
-                        [".", "BlockedRequests", ".", ".", ".", ".", ".", "."]
+                        ["AWS/WAFV2", "AllowedRequests", "WebACL", "static-website-waf", "Rule", "ALL"],
+                        [".", "BlockedRequests", ".", ".", ".", "."]
                     ]
-                    period = 300
+                    period = 60
                     stat = "Sum"
                     region = "us-east-1"
                     title = "WAF Allowed and Blocked"
@@ -57,6 +57,5 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
     dimensions = {
         WebACL = module.waf.web_acl_name
         Region = "Global"
-        Rule = "ALL"
     }
 }
