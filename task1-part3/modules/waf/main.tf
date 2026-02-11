@@ -27,7 +27,7 @@ resource "aws_wafv2_web_acl" "this" {
 
     rule {
         name = "IPRateLimit"
-        priority = 1
+        priority = 2
         action {
             block {}
         }
