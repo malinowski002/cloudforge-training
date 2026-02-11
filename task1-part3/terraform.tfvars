@@ -1,0 +1,1 @@
+bucket_name = "kacper-task1-part2-bucket"
