@@ -44,7 +44,8 @@ resource "aws_cloudwatch_dashboard" "main" {
 }
 
 resource "aws_sns_topic" "alerts" {
-  name = "waf-alerts-topic"
+  provider = aws.us_east_1
+  name     = "waf-alerts-topic"
 }
 
 resource "aws_sns_topic_subscription" "email_alerts" {
@@ -68,7 +69,6 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   dimensions = {
     WebACL = "static-website-waf"
     Rule   = "ALL"
-    Region = "Global"
   }
 
   treat_missing_data = "notBreaching"
