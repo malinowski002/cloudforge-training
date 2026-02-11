@@ -9,14 +9,15 @@ on:
     branches: [ main ]
     paths:
       - 'task1-part3/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
-  terraform:
-    name: Terraform Run
+  plan:
+    name: Terraform Init and Run
     runs-on: ubuntu-latest
 
     defaults:
@@ -30,7 +31,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ github.event_name == 'pull_request' && 'arn:aws:iam::054424862519:role/github-terraform-plan-role' || 'arn:aws:iam::054424862519:role/github-terraform-apply-role' }}
+          role-to-assume: arn:aws:iam::054424862519:role/github-terraform-plan-role
           aws-region: us-east-1
 
       - name: Setup Terraform
@@ -41,9 +42,65 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Run TFLint
+        run: tflint --init && tflint
+
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: task1-part3/tfplan
+          retention-days: 1
+
+  apply:
+    name: Terraform Apply
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    defaults:
+      run:
+        working-directory: ./task1-part3
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: task1-part3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::054424862519:role/github-terraform-apply-role
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
 
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
