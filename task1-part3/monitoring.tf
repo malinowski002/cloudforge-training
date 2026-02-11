@@ -49,7 +49,7 @@ resource "aws_sns_topic" "alerts_v2" {
 }
 
 resource "aws_sns_topic_subscription" "email_alerts" {
-  provider = aws.us_east_1
+  provider  = aws.us_east_1
   topic_arn = aws_sns_topic.alerts_v2.arn
   protocol  = "email"
   endpoint  = "malinowski002cloudforge@gmail.com"
