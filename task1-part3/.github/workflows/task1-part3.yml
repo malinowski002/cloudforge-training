@@ -1,0 +1,49 @@
+name: Terraform Task1-Part3
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'task1-part3/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'task1-part3/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform:
+    name: Terraform Run
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./task1-part3
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ github.event_name == 'pull_request' && 'arn:aws:iam::054424862519:role/github-terraform-plan-role' || 'arn:aws:iam::054424862519:role/github-terraform-apply-role' }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
