@@ -59,16 +59,17 @@ resource "aws_cloudwatch_metric_alarm" "waf_blocks" {
   evaluation_periods  = "1"
   metric_name         = "BlockedRequests"
   namespace           = "AWS/WAFV2"
-  period              = "300"
+  period              = "60"
   statistic           = "Sum"
   threshold           = "5"
   alarm_description   = "Metric monitoring the number of WAF blocked requests"
 
   dimensions = {
-    WebACL = module.waf.web_acl_name
+    WebACL = "static-website-waf"
     Region = "Global"
     Rule   = "ALL"
   }
 
-  alarm_actions = [aws_sns_topic.alerts.arn]
+  treat_missing_data = "notBreaching"
+  alarm_actions      = [aws_sns_topic.alerts.arn]
 }
