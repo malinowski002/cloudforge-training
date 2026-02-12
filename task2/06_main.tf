@@ -136,26 +136,74 @@ resource "aws_security_group" "alb" {
 ###################
 # EC2 INSTANCE
 ###################
-resource "aws_instance" "nginx_app" {
-  ami                         = "ami-0a854fe96e0b45e4e"
-  instance_type               = var.instance_type
-  subnet_id                   = aws_subnet.public.id
-  associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.ec2.id]
+# resource "aws_instance" "nginx_app" {
+#   ami                         = "ami-0a854fe96e0b45e4e"
+#   instance_type               = var.instance_type
+#   subnet_id                   = aws_subnet.public.id
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [aws_security_group.ec2.id]
 
-  user_data = <<-EOF
+#   user_data = <<-EOF
+#               #!/bin/bash
+#               apt-get update -y
+#               apt-get install nginx -y
+#               systemctl start nginx
+#               systemctl enable nginx
+#               EOF
+
+#   tags = {
+#     Name    = "${var.project_name}-ec2"
+#     Project = var.project_name
+#     Owner   = var.owner
+#   }
+# }
+
+###################
+# AUTO SCALING GROUP
+###################
+resource "aws_launch_template" "app_lt" {
+  name_prefix   = "${var.project_name}-lt-"
+  image_id      = "ami-0a854fe96e0b45e4e"
+  instance_type  = var.instance_type
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [aws_security_group.ec2.id]
+  }
+  
+  user_data = base64encode(<<-EOF
               #!/bin/bash
               apt-get update -y
               apt-get install nginx -y
               systemctl start nginx
               systemctl enable nginx
               EOF
+  )
 
-  tags = {
-    Name    = "${var.project_name}-ec2"
-    Project = var.project_name
-    Owner   = var.owner
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name    = "${var.project_name}-ec2"
+      Project = var.project_name
+      Owner   = var.owner
+    }
   }
+}
+
+resource "aws_autoscaling_group" "app_asg" {
+  name                      = "${var.project_name}-asg"
+  max_size                  = 2
+  min_size                  = 1
+  desired_capacity          = 2
+  launch_template {
+    id      = aws_launch_template.app_lt.id
+    version = "$Latest"
+  }
+  vpc_zone_identifier       = [aws_subnet.public.id, aws_subnet.public_2.id]
+  target_group_arns         = [aws_lb_target_group.app_tg.arn]
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
 }
 
 ###################
@@ -209,9 +257,9 @@ resource "aws_lb_listener" "app_listener" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "app_tg_attachment" {
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.nginx_app.id
-  port             = 80
+# resource "aws_lb_target_group_attachment" "app_tg_attachment" {
+#   target_group_arn = aws_lb_target_group.app_tg.arn
+#   target_id        = aws_instance.nginx_app.id
+#   port             = 80
 
-}
+# }
