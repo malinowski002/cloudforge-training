@@ -134,6 +134,43 @@ resource "aws_security_group" "alb" {
 }
 
 ###################
+# IAM FOR SSM
+###################
+
+resource "aws_iam_role" "ssm_role" {
+  name = "${var.project_name}-ssm-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = {
+    Name    = "${var.project_name}-ssm-role"
+    Project = var.project_name
+    Owner   = var.owner
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_attach" {
+  role       = aws_iam_role.ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+  name = "${var.project_name}-ssm-profile"
+  role = aws_iam_role.ssm_role.name
+}
+
+###################
 # EC2 INSTANCE
 ###################
 # resource "aws_instance" "nginx_app" {
@@ -170,7 +207,11 @@ resource "aws_launch_template" "app_lt" {
     associate_public_ip_address = true
     security_groups             = [aws_security_group.ec2.id]
   }
-  
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ssm_profile.name
+  }
+
   user_data = base64encode(<<-EOF
               #!/bin/bash
               apt-get update -y
