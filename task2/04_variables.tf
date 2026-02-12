@@ -33,6 +33,22 @@ variable "az" {
   default     = "eu-central-1a"
 }
 
+# ANOTHER SUBNET
+
+variable "public_subnet_cidr_2" {
+  description = "CIDR block for the second public subnet"
+  type        = string
+  default     = "10.100.20.0/24"
+}
+
+variable "az_2" {
+  description = "Availability Zone for the second public subnet"
+  type        = string
+  default     = "eu-central-1b"
+}
+
+#####################
+
 variable "project_name" {
   description = "Tag value for Project/Name"
   type        = string

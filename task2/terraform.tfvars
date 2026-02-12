@@ -1,2 +1,2 @@
 aws_profile = "default"
-owner = "malinowski002"
+owner       = "malinowski002"
