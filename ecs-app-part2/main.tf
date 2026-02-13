@@ -29,3 +29,9 @@ module "ecr_repository" {
 
   name = "app"
 }
+
+module "ecs_cluster" {
+  source = "./modules/ecs-cluster"
+
+  name = "app"
+}
