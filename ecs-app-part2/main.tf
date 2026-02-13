@@ -70,8 +70,8 @@ module "ecs_task_definition" {
       essential = true
       portMappings = [
         {
-          containerPort = 3000
-          hostPort      = 3000
+          containerPort = 8080
+          hostPort      = 8080
           protocol      = "tcp"
         }
       ]
@@ -85,4 +85,23 @@ module "alb" {
   name    = "app"
   vpc_id  = module.vpc.vpc_id
   subnets = module.vpc.public_subnet_ids
+}
+
+module "ecs_service" {
+  source = "./modules/ecs-service"
+
+  name                  = "app"
+  vpc_id                = module.vpc.vpc_id
+  alb_security_group_id = module.alb.security_group_id
+  cluster               = module.ecs_cluster.cluster_name
+  task_definition       = module.ecs_task_definition.task_definition_arn
+  desired_count         = 1
+  min_count             = 1
+  max_count             = 2
+  subnets               = module.vpc.private_subnet_ids
+  target_group_arn      = module.alb.target_group_arn
+  container_name        = "app"
+  container_port        = 8080
+
+  depends_on = [module.alb]
 }
