@@ -12,7 +12,7 @@ variable "network_mode" {
 variable "requires_compatibilities" {
   description = "A set of launch types required by the task."
   type        = list(string)
-  default     = ["FARGATE"] 
+  default     = ["FARGATE"]
 }
 
 variable "cpu" {
@@ -25,6 +25,11 @@ variable "memory" {
   description = "The amount of memory (in MiB) used by the task."
   type        = string
   default     = "512"
+}
+
+variable "execution_role_arn" {
+  description = "ARN of the ECS task execution role."
+  type        = string
 }
 
 variable "tags" {

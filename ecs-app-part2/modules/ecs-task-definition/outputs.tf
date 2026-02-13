@@ -1,2 +1,4 @@
-# ECS task definition module outputs boilerplate.
-# Add output blocks here.
+output "task_definition_arn" {
+  description = "ARN of the ECS task definition"
+  value       = aws_ecs_task_definition.this.arn
+}
