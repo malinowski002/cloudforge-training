@@ -11,13 +11,13 @@ variable "cidr_block" {
 }
 
 variable "enable_dns_support" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "enable_dns_hostnames" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "tags" {

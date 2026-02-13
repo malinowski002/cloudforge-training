@@ -23,3 +23,9 @@ module "vpc" {
     { name = "private-subnet-b", cidr = "10.0.3.0/24", az = local.az_b },
   ]
 }
+
+module "ecr_repository" {
+  source = "./modules/ecr-repository"
+
+  name = "app"
+}
