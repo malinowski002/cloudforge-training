@@ -57,6 +57,11 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_cloudwatch_log_group" "ecs_app" {
+  name              = "/ecs/app"
+  retention_in_days = 14
+}
+
 module "ecs_task_definition" {
   source = "./modules/ecs-task-definition"
 
@@ -68,6 +73,14 @@ module "ecs_task_definition" {
       name      = "app"
       image     = "${module.ecr_repository.repository_url}:latest"
       essential = true
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_app.name
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
       portMappings = [
         {
           containerPort = 8080
