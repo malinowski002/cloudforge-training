@@ -110,7 +110,10 @@ module "ecs_service" {
   task_definition       = module.ecs_task_definition.task_definition_arn
   desired_count         = 1
   min_count             = 1
-  max_count             = 2
+  max_count             = 3
+  cpu_high_threshold     = 50
+  cpu_low_threshold      = 25
+  scale_in_minutes = 5
   subnets               = module.vpc.private_subnet_ids
   target_group_arn      = module.alb.target_group_arn
   container_name        = "app"

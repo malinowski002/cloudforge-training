@@ -47,12 +47,6 @@ variable "max_count" {
   default     = 2
 }
 
-variable "cpu_target_utilization" {
-  description = "Target average CPU utilization percentage for ECS service autoscaling."
-  type        = number
-  default     = 70
-}
-
 variable "launch_type" {
   description = "The launch type on which to run your service."
   type        = string
@@ -95,4 +89,22 @@ variable "container_name" {
 variable "container_port" {
   description = "The port on the container to associate with the load balancer."
   type        = number
+}
+
+variable "cpu_high_threshold" {
+  description = "CPU utilization percentage to scale up"
+  type        = number
+  default     = 50
+}
+
+variable "cpu_low_threshold" {
+  description = "CPU utilization percentage to scale down"
+  type        = number
+  default     = 25
+}
+
+variable "scale_in_minutes" {
+  description = "Minutes below threshold before scaling in"
+  type        = number
+  default     = 5
 }
