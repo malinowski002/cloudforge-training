@@ -18,8 +18,8 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
+    type = "forward"
   }
 
-  depends_on = [ aws_lb.this , aws_lb_target_group.web ]
+  depends_on = [aws_lb.this, aws_lb_target_group.web]
 }
