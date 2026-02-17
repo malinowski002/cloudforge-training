@@ -13,10 +13,25 @@ The project is organized in modules, to make the code reusable:
 ## State Management
 The project utilizes Terraform Cloud for centralized state storage and state locking.
 
+## Pipeline CI/CD (using GitHub Actions)
+Workflow consits of 3 main stages, starting on push to `main`:
+1. Init & Validate: Terraform init, formatting check and tflint code analysis.
+2. Plan: Generating the plan of changes to infrastructure.
+3. Apply & Deploy: Requires manual confirmation.
+
 ## Run Instructions
+Due to the fact that IAM roles for GitHub Actions are managed by the same Terraform code, bootstrapping from local machine is required to "allow" access for GitHub.
+
+**Run the following command before first pipeline run:**
+
 ```bash
-1. terraform init
-2. terraform plan
-3. terraform apply
-4. terraform destroy
+terraform apply \
+  -target=aws_iam_openid_connect_provider.github \
+  -target=aws_iam_role.github_tf_plan \
+  -target=aws_iam_role_policy_attachment.plan_read_only \
+  -target=aws_iam_role.github_tf_apply \
+  -target=aws_iam_role_policy_attachment.apply_admin
 ```
+
+## Destroy Instructions
+In order to destroy all resources, use "Terraform Destroy ECS-App-Part3" workflow in Actions tab.
