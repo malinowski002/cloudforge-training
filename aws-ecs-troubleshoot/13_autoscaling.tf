@@ -27,6 +27,7 @@ resource "aws_appautoscaling_policy" "web_scale_out" {
 
     step_adjustment {
       metric_interval_lower_bound = 0
+      metric_interval_upper_bound = 20
       scaling_adjustment          = 1
     }
     step_adjustment {
