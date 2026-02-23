@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: secret-volume
+          mountPath: /etc/nginx/.htpasswd
+          subPath: .htpasswd
+        - name: storage-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-config
+      - name: secret-volume
+        secret:
+          secretName: {{ .Release.Name }}-secret
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-pvc
