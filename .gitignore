@@ -1,5 +1,10 @@
 .DS_Store
 
+# archives
+*.zip
+*.tgz
+*.tar.gz
+
 # binary files, terraform folders
 .terraform/
 .terraform.lock.hcl
