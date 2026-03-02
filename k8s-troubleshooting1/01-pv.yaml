@@ -11,6 +11,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: app-storage
+  storageClassName: standard
   hostPath:
     path: /mnt/data/app

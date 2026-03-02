@@ -4,11 +4,11 @@ metadata:
   name: app-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
   storageClassName: standard
   selector:
     matchLabels:
-      type: fast
+      type: local
