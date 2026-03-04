@@ -26,20 +26,20 @@ module "eks" {
 
   access_entries = {
     github_admin = {
-      principal_arn     = "arn:aws:iam::054424862519:user/github-actions-admin"
+      principal_arn = "arn:aws:iam::054424862519:user/github-actions-admin"
       policy_associations = {
         admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = { type = "cluster" }
         }
       }
     }
 
     local_admin = {
-      principal_arn     = "arn:aws:iam::054424862519:user/Kacper-CLI"
+      principal_arn = "arn:aws:iam::054424862519:user/Kacper-CLI"
       policy_associations = {
         admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = { type = "cluster" }
         }
       }
