@@ -6,7 +6,7 @@ module "eks" {
   cluster_version = "1.30"
 
   authentication_mode                      = "API_AND_CONFIG_MAP"
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = false
 
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
@@ -25,16 +25,6 @@ module "eks" {
   }
 
   access_entries = {
-    github_admin = {
-      principal_arn = "arn:aws:iam::054424862519:user/github-actions-admin"
-      policy_associations = {
-        admin = {
-          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = { type = "cluster" }
-        }
-      }
-    }
-
     local_admin = {
       principal_arn = "arn:aws:iam::054424862519:user/Kacper-CLI"
       policy_associations = {
