@@ -10,6 +10,10 @@ on:
     paths:
       - 'eks-cluster-part2/**'
 
+env:
+    AWS_REGION: eu-central-1
+    WORKING_DIR: ./eks-cluster-part2
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -25,17 +29,29 @@ jobs:
 
       - name: Terraform fmt
         run: terraform fmt -check
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color
+        run: terraform plan -no-color -out=tfplan
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Upload Plan Artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.WORKING_DIR }}/tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR }}
