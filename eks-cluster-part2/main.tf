@@ -20,4 +20,12 @@ module "eks" {
       ami_type       = "AL2023_x86_64_STANDARD"
     }
   }
+
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::054424862519:user/Kacper-CLI"
+      username = "admin-kacper"
+      groups   = ["system:masters"]
+    }
+  ]
 }
