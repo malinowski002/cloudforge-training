@@ -5,7 +5,7 @@ module "eks" {
   cluster_name    = "minimal-eks-cluster"
   cluster_version = "1.30"
 
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
 
   vpc_id     = var.vpc_id
@@ -17,7 +17,7 @@ module "eks" {
       max_size       = 2
       desired_size   = 1
       instance_types = ["t3.medium"]
-      ami_type = "AL2023_x86_64"
+      ami_type       = "AL2023_x86_64"
     }
   }
 }
