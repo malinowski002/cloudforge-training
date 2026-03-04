@@ -1,11 +1,14 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  version = "~> 20.0"
 
   cluster_name    = "minimal-eks-cluster"
   cluster_version = "1.30"
 
-  cluster_endpoint_public_access  = true
+  authentication_mode = "API_AND_CONFIG_MAP"
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_endpoint_public_access = true
   cluster_endpoint_private_access = true
 
   vpc_id     = var.vpc_id
@@ -21,12 +24,20 @@ module "eks" {
     }
   }
 
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::054424862519:user/Kacper-CLI"
-      username = "admin-kacper"
-      groups   = ["system:masters"]
+  access_entries = {
+    local_admin = {
+        kubernetes_groups = []
+        principal_arn      = "arn:aws:iam::054424862519:user/Kacper-CLI"
+
+        policy_associations = {
+            admin = {
+                policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+                access_scope = {
+                    type = "CLUSTER"
+                }
+            }
+        }
     }
-  ]
+  }
 }
 
