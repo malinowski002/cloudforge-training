@@ -62,19 +62,34 @@ module "eks" {
 
   access_entries = {
     local_admin = {
-      admin = {
-        policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+      principal_arn = "arn:aws:iam::054424862519:user/Kacper-CLI"
+      policy_associations = {
+        admin = {
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = { type = "cluster" }
+        }
+      }
+    }
+
+    bastion_admin = {
+      principal_arn = aws_iam_role.bastion.arn
+      policy_associations = {
+        admin = {
+          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = { type = "cluster" }
+        }
       }
     }
   }
 
   cluster_security_group_additional_rules = {
     bastion_to_k8s_api = {
-      description = "Allow bastion host to access Kubernetes API"
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = [aws_security_group.bastion.id]
+      description              = "Allow bastion host to access Kubernetes API"
+      protocol                 = "tcp"
+      from_port                = 443
+      to_port                  = 443
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.bastion.id
     }
   }
 }
@@ -150,7 +165,7 @@ resource "aws_security_group" "bastion" {
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ssm_parameter.al2023_ami.value
   instance_type               = var.bastion_instance_type
-  subnet_id                   = module.vpc.public_subnets[0]
+  subnet_id                   = module.vpc.private_subnets[0]
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   iam_instance_profile        = aws_iam_instance_profile.bastion.name
   associate_public_ip_address = false

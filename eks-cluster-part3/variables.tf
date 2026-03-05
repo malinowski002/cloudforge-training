@@ -3,16 +3,6 @@ variable "region" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "ID of the existing VPC for the EKS cluster."
-  type        = string
-}
-
-variable "subnet_ids" {
-  description = "List of subnet IDs in the VPC for EKS resources."
-  type        = list(string)
-}
-
 variable "vpc_cidr" {
   description = "CIDR block for the EKS VPC"
   type        = string
