@@ -19,22 +19,22 @@ variable "vpc_cidr" {
 }
 
 variable "azs" {
-  type = list(string)
+  type        = list(string)
   description = "Two AZs for public/private subnets"
 }
 
 variable "public_subnet_cidrs" {
-  type = list(string)
+  type        = list(string)
   description = "CIDR blocks for public subnets"
 }
 
 variable "private_subnet_cidrs" {
-  type = list(string)
+  type        = list(string)
   description = "CIDR blocks for private subnets"
 }
 
 variable "bastion_instance_type" {
-  type = string
+  type        = string
   description = "Instance type for the bastion host"
-  default = "t3.micro"
+  default     = "t3.micro"
 }
