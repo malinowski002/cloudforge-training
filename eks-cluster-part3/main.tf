@@ -43,14 +43,15 @@ module "eks" {
   authentication_mode                      = "API_AND_CONFIG_MAP"
   enable_cluster_creator_admin_permissions = false
 
-  cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = false
 
-  vpc_id     = var.vpc_id
-  subnet_ids = var.subnet_ids
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc
 
   eks_managed_node_groups = {
     default = {
+      subnet_ids = module.vpc.private_subnets
       min_size       = 1
       max_size       = 2
       desired_size   = 1
@@ -61,13 +62,19 @@ module "eks" {
 
   access_entries = {
     local_admin = {
-      principal_arn = "arn:aws:iam::054424862519:user/Kacper-CLI"
-      policy_associations = {
-        admin = {
-          policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = { type = "cluster" }
-        }
+      admin = {
+        policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
       }
+    }
+  }
+
+  cluster_security_group_additional_rules = {
+    bastion_to_k8s_api = {
+      description = "Allow bastion host to access Kubernetes API"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = [aws_security_group.bastion.id]
     }
   }
 }
