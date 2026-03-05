@@ -72,3 +72,87 @@ module "eks" {
   }
 }
 
+data "aws_ssm_parameter" "al2023_ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+}
+
+data "aws_iam_policy_document" "bastion_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "bastion" {
+  name = "eks-bastion-role"
+  assume_role_policy = data.aws_iam_policy_document.bastion_assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "bastion_attach" {
+  role       = aws_iam_role.bastion.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_policy" "bastion_eks_describe" {
+  name = "eks-bastion-describe-cluster"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster", 
+          "eks:ListClusters"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "bastion_eks_describe_attach" {
+  role       = aws_iam_role.bastion.name
+  policy_arn = aws_iam_policy.bastion_eks_describe.arn
+}
+
+resource "aws_iam_instance_profile" "bastion" {
+  name = "eks-bastion-instance-profile"
+  role = aws_iam_role.bastion.name
+}
+
+resource "aws_security_group" "bastion" {
+  name = "eks-bastion-sg"
+  description = "Security group for EKS bastion host"
+  vpc_id = module.vpc.vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "eks-bastion-sg"
+  }
+}
+
+resource "aws_instance" "bastion" {
+  ami           = data.aws_ssm_parameter.al2023_ami.value
+  instance_type = var.bastion_instance_type
+  subnet_id     = module.vpc.public_subnets[0]
+  vpc_security_group_ids = [aws_security_group.bastion.id]
+  iam_instance_profile = aws_iam_instance_profile.bastion.name
+  associate_public_ip_address = false
+
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  tags = {
+    Name = "eks-private-bastion"
+  }
+}
