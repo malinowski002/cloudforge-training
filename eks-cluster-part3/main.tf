@@ -1,3 +1,38 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
+
+  name = "eks-private-vpc"
+  cidr = var.vpc_cidr
+
+  azs = var.azs
+  public_subnets = var.public_subnet_cidrs
+  private_subnets = var.private_subnet_cidrs
+
+  enable_dns_support = true
+  enable_dns_hostnames = true
+
+  create_igw = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
+
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = "1"
+  }
+
+  tags = {
+    project = "eks-private-cluster"
+  }
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
