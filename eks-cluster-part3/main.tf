@@ -3,20 +3,20 @@ data "aws_availability_zones" "available" {
 }
 
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
 
   name = "eks-private-vpc"
   cidr = var.vpc_cidr
 
-  azs = var.azs
-  public_subnets = var.public_subnet_cidrs
+  azs             = var.azs
+  public_subnets  = var.public_subnet_cidrs
   private_subnets = var.private_subnet_cidrs
 
-  enable_dns_support = true
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
-  create_igw = true
+  create_igw         = true
   enable_nat_gateway = true
   single_nat_gateway = true
 
@@ -47,11 +47,11 @@ module "eks" {
   cluster_endpoint_public_access  = false
 
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc
+  subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
     default = {
-      subnet_ids = module.vpc.private_subnets
+      subnet_ids     = module.vpc.private_subnets
       min_size       = 1
       max_size       = 2
       desired_size   = 1
@@ -63,7 +63,7 @@ module "eks" {
   access_entries = {
     local_admin = {
       admin = {
-        policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
       }
     }
   }
@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "bastion_assume_role" {
 }
 
 resource "aws_iam_role" "bastion" {
-  name = "eks-bastion-role"
+  name               = "eks-bastion-role"
   assume_role_policy = data.aws_iam_policy_document.bastion_assume_role.json
 }
 
@@ -111,7 +111,7 @@ resource "aws_iam_policy" "bastion_eks_describe" {
       {
         Effect = "Allow"
         Action = [
-          "eks:DescribeCluster", 
+          "eks:DescribeCluster",
           "eks:ListClusters"
         ]
         Resource = "*"
@@ -131,9 +131,9 @@ resource "aws_iam_instance_profile" "bastion" {
 }
 
 resource "aws_security_group" "bastion" {
-  name = "eks-bastion-sg"
+  name        = "eks-bastion-sg"
   description = "Security group for EKS bastion host"
-  vpc_id = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   egress {
     from_port   = 0
@@ -148,11 +148,11 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_instance" "bastion" {
-  ami           = data.aws_ssm_parameter.al2023_ami.value
-  instance_type = var.bastion_instance_type
-  subnet_id     = module.vpc.public_subnets[0]
-  vpc_security_group_ids = [aws_security_group.bastion.id]
-  iam_instance_profile = aws_iam_instance_profile.bastion.name
+  ami                         = data.aws_ssm_parameter.al2023_ami.value
+  instance_type               = var.bastion_instance_type
+  subnet_id                   = module.vpc.public_subnets[0]
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
+  iam_instance_profile        = aws_iam_instance_profile.bastion.name
   associate_public_ip_address = false
 
   metadata_options {
