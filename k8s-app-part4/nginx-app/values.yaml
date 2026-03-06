@@ -1,0 +1,21 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.25.3"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
+
+persistence:
+  size: 1Gi
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
