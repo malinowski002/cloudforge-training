@@ -13,7 +13,7 @@ spec:
       labels:
         app: {{ .Values.app.name }}
     spec:
-      serviceAccountName: app-sa
+      serviceAccountName: {{ include "k8s-troubleshooting-ae.fullname" . }}-sa
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -36,7 +36,7 @@ spec:
             - configMapRef:
                 name: app-config            
           resources:
-          {{- toYaml .Values.resources | indent 12 }}
+          {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
             httpGet:
               path: /

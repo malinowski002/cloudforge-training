@@ -9,5 +9,5 @@ roleRef:
   name: app-config-reader
 subjects:
   - kind: ServiceAccount
-    name: app-sa            
+    name: {{ include "k8s-troubleshooting-ae.fullname" . }}-sa        
     namespace: {{ .Values.namespace }}
