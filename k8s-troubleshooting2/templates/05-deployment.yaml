@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}   
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}s  
+    spec:
+      serviceAccountName: app-sae    
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role             
+                    operator: In
+                    values:
+                      - production            
+      containers:
+        - name: {{ .Values.app.name }}
+          image: {{ .Values.app.image }}    
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_MODE
+              value: {{ required "APP_MODE is required, set .Values.app.mode" .Values.app.mode | quote }}
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: app-configs             
+          resources:
+          {{- toYaml .Values.resources | indent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080                       
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080                      
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
