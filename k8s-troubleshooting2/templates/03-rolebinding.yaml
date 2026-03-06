@@ -6,8 +6,8 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: app-config-readers   
+  name: app-config-reader
 subjects:
   - kind: ServiceAccount
-    name: app-sas            
+    name: app-sa            
     namespace: {{ .Values.namespace }}

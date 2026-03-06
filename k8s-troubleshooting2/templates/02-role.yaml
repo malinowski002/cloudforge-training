@@ -4,6 +4,6 @@ metadata:
   name: app-config-reader
   namespace: {{ .Values.namespace }}
 rules:
-  - apiGroups: ["core"]        
-    resources: ["configmap"]   
+  - apiGroups: [""]        
+    resources: ["configmaps"]   
     verbs: ["get", "list"]
