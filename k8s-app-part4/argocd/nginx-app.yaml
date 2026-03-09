@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/malinowski002/cloudforge-training.git
     targetRevision: main
-    path: k8s-app-part4/argocd/nginx-app
+    path: k8s-app-part4/nginx-app
     helm:
       valueFiles:
         - values.yaml
