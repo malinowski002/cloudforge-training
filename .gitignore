@@ -16,3 +16,6 @@
 # variable files
 # *.tfvars
 # *.tfvars.json
+
+# istio files
+istio-*/
