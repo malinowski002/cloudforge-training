@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Release.Namespace }}
+  labels:
+    {{- if .Values.istio.revision }}
+    istio.io/rev: {{ .Values.istio.revision | quote }}
+    {{- else if .Values.istio.inject }}
+    istio-injection: enabled
+    {{- end }}

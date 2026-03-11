@@ -19,3 +19,7 @@ hpa:
   enabled: true
   minReplicas: 2
   maxReplicas: 5
+
+istio:
+  revision: aegis
+  inject: true
