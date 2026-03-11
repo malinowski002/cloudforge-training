@@ -1,0 +1,36 @@
+services:
+  payments-db:
+    image: postgres:16
+    container_name: payments-db
+    environment:
+      POSTGRES_USER: payments
+      POSTGRES_PASSWORD: payments
+      POSTGRES_DB: payments
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+
+  payment-api:
+    build: ./payment-api
+    container_name: payment-api
+    environment:
+      PAYMENT_DB_URL: jdbc:postgresql://payments-db:5432/payments
+      PAYMENT_DB_USER: payments
+      PAYMENT_DB_PASSWORD: payments
+      PAYMENT_WORKER_BASE_URL: http://payment-worker:8090
+    ports:
+      - "8080:8080"
+    depends_on:
+      - payments-db
+
+  payment-worker:
+    build: ./payment-worker
+    container_name: payment-worker
+    environment:
+      PAYMENT_WORKER_PORT: "8090"
+      PAYMENT_API_BASE_URL: http://payment-api:8080
+      WORKER_CPU_LOAD_MS: "500"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - payment-api
