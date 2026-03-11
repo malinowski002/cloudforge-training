@@ -1,9 +1,10 @@
 .DS_Store
 
-# archives
+# archives and jars
 *.zip
 *.tgz
 *.tar.gz
+*.jar
 
 # binary files, terraform folders
 .terraform/
