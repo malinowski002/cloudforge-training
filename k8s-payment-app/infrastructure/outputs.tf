@@ -17,3 +17,7 @@ output "rds_endpoint" {
 output "rds_master_secret_arn" {
   value = module.rds.master_secret_arn
 }
+
+output "ecr_repository_urls" {
+  value = module.ecr.repository_urls
+}
