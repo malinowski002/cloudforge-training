@@ -10,9 +10,10 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "allowed_cidr_blocks" {
-  type = list(string)
-}
+# variable "allowed_cidr_blocks" {
+#   type = list(string)
+#   default = []
+# }
 
 variable "db_name" {
   type = string
@@ -50,4 +51,9 @@ variable "deletion_protection" {
 variable "kms_key_id" {
   type    = string
   default = null
+}
+
+variable "allowed_security_group_ids" {
+  type    = list(string)
+  default = []
 }
