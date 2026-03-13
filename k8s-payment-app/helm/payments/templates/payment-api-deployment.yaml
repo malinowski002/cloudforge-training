@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-api
+  namespace: payments-ns
+spec:
+  replicas: {{ .Values.paymentApi.replicas }}
+  selector:
+    matchLabels:
+      app: payment-api
+  template:
+    metadata:
+      labels:
+        app: payment-api
+    spec:
+      containers:
+        - name: payment-api
+          image: {{ .Values.paymentApi.image.repository }}:{{ .Values.paymentApi.image.tag }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PAYMENT_DB_URL
+              value: jdbc:postgresql://{{ .Values.db.endpoint }}:5432/{{ .Values.db.name }}
+            - name: PAYMENT_DB_USER
+              value: {{ .Values.db.user | quote }}
+            - name: PAYMENT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: payments-db
+                  key: password
+            - name: PAYMENT_WORKER_BASE_URL
+              value: http://payment-worker:8090

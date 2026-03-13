@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-api
+  namespace: payments-ns
+spec:
+  selector:
+    app: payment-api
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-worker
+  namespace: payments-ns
+spec:
+  selector:
+    app: payment-worker
+  ports:
+    - port: 8090
+      targetPort: 8090

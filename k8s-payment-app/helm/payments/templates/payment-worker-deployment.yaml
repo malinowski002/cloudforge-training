@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-worker
+  namespace: payments-ns
+spec:
+  replicas: {{ .Values.paymentWorker.replicas }}
+  selector:
+    matchLabels:
+      app: payment-worker
+  template:
+    metadata:
+      labels:
+        app: payment-worker
+    spec:
+      containers:
+        - name: payment-worker
+          image: {{ .Values.paymentWorker.image.repository }}:{{ .Values.paymentWorker.image.tag }}
+          ports:
+            - containerPort: 8090
+          env:
+            - name: PAYMENT_API_BASE_URL
+              value: http://payment-api:8080
+            - name: PAYMENT_WORKER_PORT
+              value: "8090"
+            - name: WORKER_CPU_LOAD_MS
+              value: {{ .Values.paymentWorker.cpuLoadMs | quote }}
