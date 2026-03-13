@@ -5,6 +5,10 @@ metadata:
   namespace: payments-ns
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /payments/00000000-0000-0000-0000-000000000000
+    alb.ingress.kubernetes.io/healthcheck-method: GET
+    alb.ingress.kubernetes.io/success-codes: "200-499"
 spec:
   ingressClassName: alb
   rules:
