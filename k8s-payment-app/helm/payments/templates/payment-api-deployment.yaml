@@ -20,7 +20,7 @@ spec:
             - containerPort: 8080
           env:
             - name: PAYMENT_DB_URL
-              value: jdbc:postgresql://{{ .Values.db.endpoint }}:5432/{{ .Values.db.name }}
+              value: jdbc:postgresql://{{ .Values.db.endpoint }}/{{ .Values.db.name }}
             - name: PAYMENT_DB_USER
               value: {{ .Values.db.user | quote }}
             - name: PAYMENT_DB_PASSWORD
