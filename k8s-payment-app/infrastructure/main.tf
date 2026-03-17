@@ -39,3 +39,13 @@ module "ecr" {
     "payment-worker"
   ]
 }
+
+module "ec2_postgres" {
+  source = "./modules/ec2-postgres"
+
+  vpc_id = module.vpc.vpc_id
+  subnet_id = module.vpc.private_subnet_ids[0]
+  eks_node_security_group_id = module.eks.node_security_group_id
+  db_password = var.db_password
+  instance_type = "t3.micro"
+}

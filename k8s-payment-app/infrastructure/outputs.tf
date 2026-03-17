@@ -21,3 +21,7 @@ output "rds_master_secret_arn" {
 output "ecr_repository_urls" {
   value = module.ecr.repository_urls
 }
+
+output "ec2_postgres_private_ip" {
+  value = module.ec2_postgres.private_ip
+}
