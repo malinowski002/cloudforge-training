@@ -1,4 +1,4 @@
-namespace: payments
+namespace: payments-ns
 
 db:
   endpoint: ""
@@ -6,15 +6,33 @@ db:
   user: payments
   password: ""
 
+ingress:
+  enabled: true
+
 paymentApi:
   replicas: 2
   image:
     repository: ""
     tag: latest
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 paymentWorker:
+  enabled: true
   replicas: 2
   image:
     repository: ""
     tag: latest
   cpuLoadMs: 500
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

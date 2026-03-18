@@ -1,8 +1,11 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: payments-ingress
-  namespace: payments-ns
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "payments.labels" . | nindent 4 }}
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
@@ -21,3 +24,4 @@ spec:
                 name: payment-api
                 port:
                   number: 8080
+{{- end }}

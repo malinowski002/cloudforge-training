@@ -1,17 +1,23 @@
+{{- if .Values.paymentWorker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-worker
-  namespace: payments-ns
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "payments.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
 spec:
   replicas: {{ .Values.paymentWorker.replicas }}
   selector:
     matchLabels:
-      app: payment-worker
+      {{- include "payments.worker.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: payment-worker
+        {{- include "payments.labels" . | nindent 8 }}
+        {{- include "payments.worker.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
     spec:
       containers:
         - name: payment-worker
@@ -25,3 +31,22 @@ spec:
               value: "8090"
             - name: WORKER_CPU_LOAD_MS
               value: {{ .Values.paymentWorker.cpuLoadMs | quote }}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8090
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8090
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 3
+          {{- with .Values.paymentWorker.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

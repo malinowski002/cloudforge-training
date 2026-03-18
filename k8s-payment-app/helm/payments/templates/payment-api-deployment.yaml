@@ -2,16 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-api
-  namespace: payments-ns
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "payments.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
 spec:
   replicas: {{ .Values.paymentApi.replicas }}
   selector:
     matchLabels:
-      app: payment-api
+      {{- include "payments.api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: payment-api
+        {{- include "payments.labels" . | nindent 8 }}
+        {{- include "payments.api.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: api
     spec:
       containers:
         - name: payment-api
@@ -30,3 +35,21 @@ spec:
                   key: password
             - name: PAYMENT_WORKER_BASE_URL
               value: http://payment-worker:8090
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            failureThreshold: 3
+          {{- with .Values.paymentApi.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
