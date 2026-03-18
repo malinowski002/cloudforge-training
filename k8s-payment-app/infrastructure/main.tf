@@ -10,17 +10,17 @@ module "vpc" {
   private_subnets = ["10.20.64.0/20", "10.20.80.0/20", "10.20.96.0/20"]
 }
 
-module "rds" {
-  source = "./modules/rds"
+# module "rds" {
+#   source = "./modules/rds"
 
-  name                       = "payments-db"
-  vpc_id                     = module.vpc.vpc_id
-  subnet_ids                 = module.vpc.private_subnet_ids
-  allowed_security_group_ids = [module.eks.node_security_group_id]
+#   name                       = "payments-db"
+#   vpc_id                     = module.vpc.vpc_id
+#   subnet_ids                 = module.vpc.private_subnet_ids
+#   allowed_security_group_ids = [module.eks.node_security_group_id]
 
-  db_name     = "payments"
-  db_username = "payments"
-}
+#   db_name     = "payments"
+#   db_username = "payments"
+# }
 
 module "eks" {
   source = "./modules/eks"

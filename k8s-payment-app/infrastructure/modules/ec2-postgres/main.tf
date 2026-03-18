@@ -1,4 +1,4 @@
-resource "aws_secuity_group" "postgres_vm" {
+resource "aws_security_group" "postgres_vm" {
     name = "payments-postgres-vm-sg"
     description = "Allow PostgreSQL from EKS nodes"
     vpc_id = var.vpc_id

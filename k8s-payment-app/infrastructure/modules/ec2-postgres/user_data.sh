@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
-# format and mount the data volume
-mkfs -t xfs /dev/xvdf
+# format and mount the data volume (NVMe device name on Nitro instances)
+DATA_DEVICE=$(lsblk -dpno NAME,TYPE | awk '$2=="disk" && $1!~/nvme0/ {print $1; exit}')
+mkfs -t xfs "$DATA_DEVICE"
 mkdir -p /var/lib/postgresql
-echo '/dev/xvdf /var/lib/postgresql xfs defaults,nofail 0 2' >> /etc/fstab
+echo "$DATA_DEVICE /var/lib/postgresql xfs defaults,nofail 0 2" >> /etc/fstab
 mount -a
 
 # install PostgreSQL 16
