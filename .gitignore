@@ -20,3 +20,6 @@
 
 # istio files
 istio-*/
+
+# gitlab repos
+basic-application-pipeline
