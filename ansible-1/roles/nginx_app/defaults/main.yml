@@ -1,0 +1,4 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for roles/nginx_app
+nginx_version: "1.18.0-6ubuntu14.8" 
