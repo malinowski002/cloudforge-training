@@ -2,3 +2,7 @@
 ---
 # defaults file for roles/nginx_app
 nginx_version: "1.18.0-6ubuntu14.8" 
+nginx_worker_processes: 1
+nginx_worker_connections: 1024
+nginx_port: 80
+nginx_root: /var/www/html
