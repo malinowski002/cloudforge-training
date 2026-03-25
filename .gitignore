@@ -23,3 +23,10 @@ istio-*/
 
 # gitlab repos
 basic-application-pipeline
+
+# ansible
+.vault_pass
+*.retry
+
+# html template
+index-template.html
