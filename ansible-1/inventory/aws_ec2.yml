@@ -1,0 +1,26 @@
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - eu-central-1
+
+filters:
+  instance-state-name: running
+
+keyed_groups:
+  - key: tags.Role
+    prefix: role
+    separator: "_"
+  - key: tags.Env
+    prefix: env
+    separator: "_"
+
+compose:
+  ansible_host: 54.93.234.144
+
+hostnames:
+  - 54.93.234.144
+
+vars:
+  ansible_user: ubuntu
+  ansible_ssh_private_key_file: ~/.ssh/ansible-key.pem
+  ansible_ssh_common_args: "-o StrictHostKeyChecking=no"

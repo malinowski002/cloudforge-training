@@ -1,0 +1,14 @@
+server {                                                                                                                                        
+    listen {{ replica_base_port + item - 1 }};
+    server_name {{ nginx_server_name }};                                                                                                        
+                                                                                                                                                
+    root  {{ nginx_root }};
+    index index.html;                                                                                                                           
+                
+    access_log {{ nginx_access_log | replace('.log', '_replica_' + item | string + '.log') }};                                                  
+    error_log  {{ nginx_error_log  | replace('.log', '_replica_' + item | string + '.log') }};
+                                                                                                                                                
+    location / {
+        try_files $uri $uri/ =404;                                                                                                              
+    }           
+}

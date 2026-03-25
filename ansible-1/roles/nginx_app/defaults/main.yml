@@ -1,8 +1,34 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for roles/nginx_app
-nginx_version: "1.18.0-6ubuntu14.8" 
-nginx_worker_processes: 1
+# installation
+nginx_version: "1.18.0-6ubuntu14.8"   
+
+# worker config
+nginx_worker_processes: 1                                                                                                                       
 nginx_worker_connections: 1024
-nginx_port: 80
+
+# server config
+nginx_port: 80  
+nginx_server_name: "_"
 nginx_root: /var/www/html
+
+# log paths
+nginx_access_log: /var/log/nginx/access.log
+nginx_error_log: /var/log/nginx/error.log                                                                                                       
+
+# system user
+nginx_system_user: www
+nginx_system_group: www                                                                                                                         
+
+# version
+release_version: "1.0.0"
+
+# autoscaling simulation
+replica_count: 1
+replica_base_port: 8080
+
+# auth
+nginx_auth_enabled: false
+nginx_auth_realm: "Restricted"                                                                                                                  
+nginx_htpasswd_path: /etc/nginx/.htpasswd

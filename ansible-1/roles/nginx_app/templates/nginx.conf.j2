@@ -8,9 +8,31 @@ http {
     include mime.types;
     default_type application/octet-stream;
 
+    access_log {{ nginx_access_log }};
+    error_log  {{ nginx_error_log }};
+
     server {
         listen {{ nginx_port }};
-        root {{ nginx_root }};
+        server_name {{ nginx_server_name }};
+
+        root  {{ nginx_root }};
         index index.html;
+
+{% if nginx_auth_enabled %}
+        auth_basic "{{ nginx_auth_realm }}";
+        auth_basic_user_file {{ nginx_htpasswd_path }};
+{% endif %}
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
     }
+
+{% if replica_count > 1 %}
+    upstream replicas {
+{% for i in range(1, replica_count + 1) %}
+        server 127.0.0.1:{{ replica_base_port + i - 1 }};
+{% endfor %}
+    }
+{% endif %}
 }

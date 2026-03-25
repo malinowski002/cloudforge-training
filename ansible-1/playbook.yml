@@ -1,6 +1,8 @@
 - name: Configure NGINX web server
-  hosts: webservers
+  hosts: role_webserver
   become: true
+  vars_files:
+    - roles/nginx_app/vars/vault.yml
 
   roles:
     - nginx_app
