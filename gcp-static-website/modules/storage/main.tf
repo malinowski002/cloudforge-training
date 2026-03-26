@@ -20,3 +20,15 @@ resource "google_storage_bucket_object" "index_html" {
   name   = "index.html"
   source = var.index_html_path
 }
+
+resource "google_storage_bucket_object" "error_404_html" {
+  bucket = google_storage_bucket.website.name
+  name   = "error_404.html"
+  source = var.error_404_html_path
+}
+
+resource "google_storage_bucket_object" "error_5xx_html" {
+  bucket = google_storage_bucket.website.name
+  name   = "error_5xx.html"
+  source = var.error_5xx_html_path
+}

@@ -7,6 +7,8 @@ module "storage" {
   bucket_name     = "static-website-${random_id.bucket_suffix.hex}"
   region          = "US"
   index_html_path = "index.html"
+  error_404_html_path = "error_404.html"
+  error_5xx_html_path = "error_5xx.html"
 }
 
 module "load_balancer" {

@@ -7,7 +7,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   target                = google_compute_target_http_proxy.default.id
   port_range            = "80"
   ip_address            = google_compute_global_address.default.address
-  load_balancing_scheme = "EXTERNAL"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
 }
 
 resource "google_compute_global_forwarding_rule" "https" {
@@ -15,7 +15,7 @@ resource "google_compute_global_forwarding_rule" "https" {
   target                = google_compute_target_https_proxy.default.id
   port_range            = "443"
   ip_address            = google_compute_global_address.default.address
-  load_balancing_scheme = "EXTERNAL"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
 }
 
 resource "google_compute_target_http_proxy" "default" {
@@ -32,6 +32,22 @@ resource "google_compute_target_https_proxy" "default" {
 resource "google_compute_url_map" "default" {
   name            = "static-website-url-map"
   default_service = google_compute_backend_bucket.cdn_backend.id
+
+  default_custom_error_response_policy {
+    error_service = google_compute_backend_bucket.cdn_backend.id
+
+    error_response_rule {
+      match_response_codes = ["404"]
+      path = "/error_404.html"
+      override_response_code = 404
+    }
+
+    error_response_rule {
+      match_response_codes = ["500", "502", "503", "504"]
+      path = "/error_5xx.html"
+      override_response_code = 500
+    }
+  }
 }
 
 resource "google_compute_url_map" "https" {
@@ -46,6 +62,8 @@ resource "google_compute_backend_bucket" "cdn_backend" {
   name        = "static-website-backend-bucket"
   bucket_name = var.backend_bucket_name
   enable_cdn  = true
+
+  custom_response_headers = ["content-type:text/html"]
 }
 
 resource "google_compute_ssl_certificate" "default" {
