@@ -1,118 +1,129 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for roles/nginx_app
-- name: Update apt cache                                                                                                                        
+- name: Update apt cache
   ansible.builtin.apt:
-    update_cache: true                                                                                                                          
+    update_cache: true
   tags: [install]
+
 - name: Install nginx
-  ansible.builtin.apt:                                                                                                                          
+  ansible.builtin.apt:
     name: "nginx={{ nginx_version }}"
     state: present
   tags: [install]
-- name: Create system group www                                                                                                                 
+
+- name: Create system group www
   ansible.builtin.group:
-    name: "{{ nginx_system_group }}"                                                                                                            
+    name: "{{ nginx_system_group }}"
     system: true
     state: present
   tags: [install]
-- name: Create system user www                                                                                                                  
+
+- name: Create system user www
   ansible.builtin.user:
-    name: "{{ nginx_system_user }}"                                                                                                             
+    name: "{{ nginx_system_user }}"
     group: "{{ nginx_system_group }}"
     system: true
     shell: /usr/sbin/nologin
-    create_home: false                                                                                                                          
+    create_home: false
     state: present
   tags: [install]
+
 - name: Create web root directory
   ansible.builtin.file:
     path: "{{ nginx_root }}"
-    state: directory                                                                                                                            
+    state: directory
     owner: "{{ nginx_system_user }}"
-    group: "{{ nginx_system_group }}"                                                                                                           
+    group: "{{ nginx_system_group }}"
     mode: "0755"
   tags: [install, config]
+
 - name: Deploy nginx config template
-  ansible.builtin.template:                                                                                                                     
+  ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-    owner: root                                                                                                                                 
+    owner: root
     group: root
-    mode: "0644"                                                                                                                                
+    mode: "0644"
   notify: Restart nginx
   tags: [config]
-- name: Deploy .htpasswd file (when auth enabled)                                                                                               
+
+- name: Deploy .htpasswd file (when auth enabled)
   ansible.builtin.template:
-    src: htpasswd.j2                                                                                                                            
+    src: htpasswd.j2
     dest: "{{ nginx_htpasswd_path }}"
-    owner: root                                                                                                                                 
+    owner: root
     group: www-data
-    mode: "0640"                                                                                                                                
+    mode: "0640"
   when: nginx_auth_enabled
   notify: Restart nginx
   tags: [config, security]
+
 - name: Deploy versioned index.html
-  ansible.builtin.template:                                                                                                                     
+  ansible.builtin.template:
     src: index.html.j2
     dest: "{{ nginx_root }}/index.html"
-    owner: "{{ nginx_system_user }}"                                                                                                            
+    owner: "{{ nginx_system_user }}"
     group: "{{ nginx_system_group }}"
-    mode: "0644"                                                                                                                                
+    mode: "0644"
   tags: [config, deploy]
+
 - name: Deploy replica nginx instances (autoscaling simulation)
-  ansible.builtin.template:                                                                                                                     
+  ansible.builtin.template:
     src: nginx_replica.conf.j2
-    dest: "/etc/nginx/conf.d/replica_{{ item }}.conf"                                                                                           
+    dest: "/etc/nginx/conf.d/replica_{{ item }}.conf"
     owner: root
-    group: root                                                                                                                                 
-    mode: "0644"                                                                                                                                
+    group: root
+    mode: "0644"
   loop: "{{ range(1, replica_count + 1) | list }}"
-  when: replica_count > 1                                                                                                                       
-  notify: Restart nginx                                                                                                                         
+  when: replica_count > 1
+  notify: Restart nginx
   tags: [config, autoscale]
+
 - name: Start and enable nginx
   ansible.builtin.service:
-    name: nginx                                                                                                                                 
+    name: nginx
     state: started
-    enabled: true                                                                                                                               
-  tags: [run]   
+    enabled: true
+  tags: [run]
 
-- name: Wait for nginx to be reachable on port {{ nginx_port }}                                                                                 
+- name: Wait for nginx to be reachable on port {{ nginx_port }}
   ansible.builtin.wait_for:
-    host: "{{ ansible_host | default('localhost') }}"                                                                                           
+    host: "{{ ansible_host | default('localhost') }}"
     port: "{{ nginx_port }}"
     timeout: 30
-  tags: [run, validate]                                                                                                                         
+  tags: [run, validate]
+
 - name: Gather service facts
-  ansible.builtin.service_facts:                                                                                                                
+  ansible.builtin.service_facts:
   tags: [validate]
-- name: Assert nginx is running                                                                                                                 
+
+- name: Assert nginx is running
   ansible.builtin.assert:
     that:
       - ansible_facts.services['nginx.service'] is defined
-      - ansible_facts.services['nginx.service']['state'] == 'running'                                                                           
+      - ansible_facts.services['nginx.service']['state'] == 'running'
     fail_msg: "nginx service is not running!"
-    success_msg: "nginx is running correctly."                                                                                                  
-  tags: [validate]                                                                                                                              
+    success_msg: "nginx is running correctly."
+  tags: [validate]
 
-- name: Validate nginx config syntax                                                                                                            
+- name: Validate nginx config syntax
   ansible.builtin.command: nginx -t
   changed_when: false
-  tags: [validate]                                                                                                                              
-
-- name: Health check — HTTP response from nginx                                                                                                 
-  ansible.builtin.uri:
-    url: "http://{{ ansible_host | default('localhost') }}:{{ nginx_port }}/"                                                                   
-    return_content: true
-    status_code: 200                                                                                                                            
-  register: health_check                                                                                                                        
   tags: [validate]
-                                                                                                                                                
+
+- name: Health check — HTTP response from nginx
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host | default('localhost') }}:{{ nginx_port }}/"
+    return_content: true
+    status_code: 200
+  register: health_check
+  tags: [validate]
+
 - name: Assert health check contains release version
   ansible.builtin.assert:
     that:
       - release_version in health_check.content
-    fail_msg: "Health check failed — release_version not found in response"                                                                     
+    fail_msg: "Health check failed — release_version not found in response"
     success_msg: "Health check passed — version {{ release_version }} is live"
   tags: [validate]
