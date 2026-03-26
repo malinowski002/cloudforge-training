@@ -30,3 +30,8 @@ basic-application-pipeline
 
 # html template
 index-template.html
+
+# secrets, keys, etc.
+*.pem
+*.key
+*.crt
