@@ -12,8 +12,10 @@ module "storage" {
 module "load_balancer" {
   source              = "./modules/load-balancer"
   backend_bucket_name = module.storage.bucket_name
+  ssl_certificate_path = var.ssl_certificate_path
+  ssl_certificate_private_key_path = var.ssl_private_key_path
 }
 
 output "website_url" {
-  value = "http://${module.load_balancer.lb_ip_address}"
+  value = "https://${module.load_balancer.lb_ip_address}"
 }
