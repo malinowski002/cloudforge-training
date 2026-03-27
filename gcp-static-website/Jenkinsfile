@@ -30,6 +30,7 @@ pipeline {
                     file(credentialsId: 'ssl-private-key-file', variable: 'TMP_KEY_PATH')
                 ]) {
                     dir('gcp-static-website') {
+                        sh 'rm -f ./cert.pem ./key.pem'
                         sh 'cp $TMP_CERT_PATH ./cert.pem'
                         sh 'cp $TMP_KEY_PATH ./key.pem'
 
@@ -52,6 +53,7 @@ pipeline {
                     file(credentialsId: 'ssl-private-key-file', variable: 'TMP_KEY_PATH')
                 ]) {
                     dir('gcp-static-website') {
+                        sh 'rm -f ./cert.pem ./key.pem'
                         sh 'cp $TMP_CERT_PATH ./cert.pem'
                         sh 'cp $TMP_KEY_PATH ./key.pem'
 
