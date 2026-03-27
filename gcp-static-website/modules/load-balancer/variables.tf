@@ -3,14 +3,12 @@ variable "backend_bucket_name" {
   type        = string
 }
 
-variable "ssl_certificate" {
-  description = "SSL certificate content (PEM format)."
+variable "ssl_certificate_path" {
+  description = "Path to SSL certificate file (PEM format)"
   type        = string
-  sensitive   = true
 }
 
-variable "ssl_private_key" {
-  description = "SSL private key content (PEM format)."
+variable "ssl_private_key_path" {
+  description = "Path to SSL private key file (PEM format)"
   type        = string
-  sensitive   = true
 }

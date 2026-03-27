@@ -9,14 +9,10 @@ variable "region" {
   default     = "europe-central2"
 }
 
-variable "ssl_certificate" {
-  description = "SSL certificate content (PEM format)."
-  type        = string
-  sensitive   = true
+variable "ssl_certificate_path" {
+  type = string
 }
 
-variable "ssl_private_key" {
-  description = "SSL private key content (PEM format)."
-  type        = string
-  sensitive   = true
+variable "ssl_private_key_path" {
+  type = string
 }

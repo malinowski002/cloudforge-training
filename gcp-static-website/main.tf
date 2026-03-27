@@ -12,10 +12,10 @@ module "storage" {
 }
 
 module "load_balancer" {
-  source              = "./modules/load-balancer"
-  backend_bucket_name = module.storage.bucket_name
-  ssl_certificate     = var.ssl_certificate
-  ssl_private_key     = var.ssl_private_key
+  source               = "./modules/load-balancer"
+  backend_bucket_name  = module.storage.bucket_name
+  ssl_certificate_path = var.ssl_certificate_path
+  ssl_private_key_path = var.ssl_private_key_path
 }
 
 output "website_url" {

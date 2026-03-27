@@ -68,8 +68,8 @@ resource "google_compute_backend_bucket" "cdn_backend" {
 
 resource "google_compute_ssl_certificate" "default" {
   name_prefix = "static-website-ssl-cert-"
-  private_key = var.ssl_private_key
-  certificate = var.ssl_certificate
+  certificate = file(var.ssl_certificate_path)
+  private_key = file(var.ssl_private_key_path)
 
   lifecycle {
     create_before_destroy = true
