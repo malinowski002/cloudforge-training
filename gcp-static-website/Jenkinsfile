@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    environment {
+        TF_IN_AUTOMATION = 'true'
+    }
+
+    stages {
+        stage('Init') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'hcp-terraform-token', variable: 'TF_TOKEN_app_terraform_io'),
+                    file(credentialsId: 'gcp-plan-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')
+                ]) {
+                    dir('gcp-static-website') {
+                        sh 'terraform init'
+                        sh 'terraform fmt -check -recursive'
+                        sh 'terraform validate'
+                        sh 'tflint --recursive'
+                    }
+                }
+            }
+        }
+        stage('Plan') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'hcp-terraform-token', variable: 'TF_TOKEN_app_terraform_io'),
+                    file(credentialsId: 'gcp-plan-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
+                    string(credentialsId: 'ssl-certificate', variable: 'TF_VAR_ssl_certificate'),
+                    string(credentialsId: 'ssl-private-key', variable: 'TF_VAR_ssl_private_key')
+                ]) {
+                    dir('gcp-static-website') {
+                        sh 'terraform plan -out=tfplan'
+                    }
+                }
+            }
+        }
+        stage('Approval') {
+            steps {
+                input message: 'Apply changes?'
+            }
+        }
+        stage('Apply') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'hcp-terraform-token', variable: 'TF_TOKEN_app_terraform_io'),
+                    file(credentialsId: 'gcp-apply-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
+                    string(credentialsId: 'ssl-certificate', variable: 'TF_VAR_ssl_certificate'),
+                    string(credentialsId: 'ssl-private-key', variable: 'TF_VAR_ssl_private_key')
+                ]) {
+                    dir('gcp-static-website') {
+                        sh 'terraform apply -auto-approve tfplan'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
