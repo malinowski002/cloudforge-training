@@ -6,7 +6,7 @@ variable "backend_bucket_name" {
 variable "ssl_certificate" {
   description = "SSL certificate content (PEM format)."
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "ssl_private_key" {

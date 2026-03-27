@@ -37,21 +37,21 @@ resource "google_compute_url_map" "default" {
     error_service = google_compute_backend_bucket.cdn_backend.id
 
     error_response_rule {
-      match_response_codes = ["404"]
-      path = "/error_404.html"
+      match_response_codes   = ["404"]
+      path                   = "/error_404.html"
       override_response_code = 404
     }
 
     error_response_rule {
-      match_response_codes = ["500", "502", "503", "504"]
-      path = "/error_5xx.html"
+      match_response_codes   = ["500", "502", "503", "504"]
+      path                   = "/error_5xx.html"
       override_response_code = 500
     }
   }
 }
 
 resource "google_compute_url_map" "https" {
-  name           = "static-website-https-url-map"
+  name = "static-website-https-url-map"
   default_url_redirect {
     https_redirect = true
     strip_query    = false
