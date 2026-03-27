@@ -26,8 +26,8 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'hcp-terraform-token', variable: 'TF_TOKEN_app_terraform_io'),
                     file(credentialsId: 'gcp-plan-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
-                    file(credentialsId: 'ssl-certificate-file', variable: 'TF_VAR_ssl_certificate_path'),
-                    file(credentialsId: 'ssl-private-key-file', variable: 'TF_VAR_ssl_private_key_path')
+                    file(credentialsId: 'ssl-certificate-file', variable: 'TMP_CERT_PATH'),
+                    file(credentialsId: 'ssl-private-key-file', variable: 'TMP_KEY_PATH')
                 ]) {
                     dir('gcp-static-website') {
                         sh 'cp $TMP_CERT_PATH ./cert.pem'
@@ -48,8 +48,8 @@ pipeline {
                 withCredentials([
                     string(credentialsId: 'hcp-terraform-token', variable: 'TF_TOKEN_app_terraform_io'),
                     file(credentialsId: 'gcp-apply-sa-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
-                    file(credentialsId: 'ssl-certificate-file', variable: 'TF_VAR_ssl_certificate_path'),
-                    file(credentialsId: 'ssl-private-key-file', variable: 'TF_VAR_ssl_private_key_path')
+                    file(credentialsId: 'ssl-certificate-file', variable: 'TMP_CERT_PATH'),
+                    file(credentialsId: 'ssl-private-key-file', variable: 'TMP_KEY_PATH')
                 ]) {
                     dir('gcp-static-website') {
                         sh 'cp $TMP_CERT_PATH ./cert.pem'
