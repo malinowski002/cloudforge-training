@@ -1,3 +1,4 @@
+# Storage bucket for logs
 resource "google_storage_bucket" "logs" {
   name                        = var.bucket_name
   location                    = var.region
@@ -13,6 +14,7 @@ resource "google_storage_bucket" "logs" {
   }
 }
 
+# Routing LB logs to the bucket
 resource "google_logging_project_sink" "lb_logs" {
   name                   = "static-website-lb-logs"
   destination            = "storage.googleapis.com/${google_storage_bucket.logs.name}"
@@ -20,6 +22,7 @@ resource "google_logging_project_sink" "lb_logs" {
   unique_writer_identity = true
 }
 
+# Permission to write logs to the bucket
 resource "google_storage_bucket_iam_member" "logs_writer" {
   bucket = google_storage_bucket.logs.name
   role   = "roles/storage.objectCreator"
