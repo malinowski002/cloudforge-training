@@ -35,3 +35,5 @@ index-template.html
 *.pem
 *.key
 *.crt
+tf-apply-sa-key.json
+tf-plan-sa-key.json
