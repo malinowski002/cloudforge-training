@@ -6,11 +6,9 @@ variable "backend_bucket_name" {
 variable "ssl_certificate_path" {
   description = "Path to SSL certificate file (PEM format)"
   type        = string
-  ephemeral   = true
 }
 
 variable "ssl_private_key_path" {
   description = "Path to SSL private key file (PEM format)"
   type        = string
-  ephemeral   = true
 }

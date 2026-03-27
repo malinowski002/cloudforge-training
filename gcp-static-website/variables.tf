@@ -11,10 +11,8 @@ variable "region" {
 
 variable "ssl_certificate_path" {
   type      = string
-  ephemeral = true
 }
 
 variable "ssl_private_key_path" {
   type      = string
-  ephemeral = true
 }

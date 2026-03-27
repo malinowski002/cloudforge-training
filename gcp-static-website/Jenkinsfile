@@ -30,7 +30,10 @@ pipeline {
                     file(credentialsId: 'ssl-private-key-file', variable: 'TF_VAR_ssl_private_key_path')
                 ]) {
                     dir('gcp-static-website') {
-                        sh 'terraform plan -out=tfplan'
+                        sh 'cp $TMP_CERT_PATH ./cert.pem'
+                        sh 'cp $TMP_KEY_PATH ./key.pem'
+
+                        sh 'TF_VAR_ssl_certificate_path="./cert.pem" TF_VAR_ssl_private_key_path="./key.pem" terraform plan -out=tfplan'
                     }
                 }
             }
@@ -49,6 +52,9 @@ pipeline {
                     file(credentialsId: 'ssl-private-key-file', variable: 'TF_VAR_ssl_private_key_path')
                 ]) {
                     dir('gcp-static-website') {
+                        sh 'cp $TMP_CERT_PATH ./cert.pem'
+                        sh 'cp $TMP_KEY_PATH ./key.pem'
+
                         sh 'terraform apply -auto-approve tfplan'
                     }
                 }
