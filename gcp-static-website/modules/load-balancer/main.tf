@@ -68,6 +68,6 @@ resource "google_compute_backend_bucket" "cdn_backend" {
 
 resource "google_compute_ssl_certificate" "default" {
   name        = "static-website-ssl-certificate"
-  private_key = file(var.ssl_certificate_private_key_path)
-  certificate = file(var.ssl_certificate_path)
+  private_key = var.ssl_private_key
+  certificate = var.ssl_certificate
 }
