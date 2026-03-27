@@ -14,10 +14,20 @@ module "storage" {
 module "load_balancer" {
   source              = "./modules/load-balancer"
   backend_bucket_name = module.storage.bucket_name
-  ssl_certificate_path = var.ssl_certificate_path
-  ssl_certificate_private_key_path = var.ssl_private_key_path
+  ssl_certificate = var.ssl_certificate
+  ssl_private_key = var.ssl_private_key
 }
 
 output "website_url" {
   value = "https://${module.load_balancer.lb_ip_address}"
+}
+
+module "logging" {
+  source      = "./modules/logging"
+  bucket_name = "static-website-logs-${random_id.bucket_suffix.hex}"
+  region      = "US"
+}
+
+module "monitoring" {
+  source = "./modules/monitoring"
 }
