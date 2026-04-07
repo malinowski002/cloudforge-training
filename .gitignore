@@ -37,3 +37,6 @@ index-template.html
 *.crt
 tf-apply-sa-key.json
 tf-plan-sa-key.json
+
+# node modules
+node_modules/
