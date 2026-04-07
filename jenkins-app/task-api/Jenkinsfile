@@ -22,7 +22,7 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                dir('task-api') {
+                dir('jenkins-app/task-api') {
                     sh 'npm install'
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
                 expression { return params.RUN_TESTS }
             }
             steps {
-                dir('task-api') {
+                dir('jenkins-app/task-api') {
                     sh 'npm test'
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
     post {
         success {
             echo "Build succeeded for version: ${params.BUILD_VERSION}"
-            archiveArtifacts artifacts: 'task-api/package.json', fingerprint: true
+            archiveArtifacts artifacts: 'jenkins-app/task-api/package.json', fingerprint: true
         }
         failure {
             echo "Build failed for version: ${params.BUILD_VERSION}"
