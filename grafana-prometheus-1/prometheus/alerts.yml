@@ -1,0 +1,15 @@
+groups:
+  - name: example_app
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{job="example_app", code=~"4..|5.."}[1m]))
+          /
+          sum(rate(http_requests_total{job="example_app"}[1m]))
+          > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on example_app"
+          description: "Error rate is {{ humanizePercentage $value }} (threshold: 5%)"
