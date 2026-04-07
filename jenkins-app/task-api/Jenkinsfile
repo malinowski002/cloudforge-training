@@ -22,7 +22,9 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                sh 'npm install'
+                dir('task-api') {
+                    sh 'npm install'
+                }
             }
         }
 
@@ -31,7 +33,9 @@ pipeline {
                 expression { return params.RUN_TESTS }
             }
             steps {
-                sh 'npm test'
+                dir('task-api') {
+                    sh 'npm test'
+                }
             }
         }
     }
