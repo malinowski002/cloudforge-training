@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters{
+        choice(name: 'ENV', choices: ['dev', 'test'], description: 'Target environment')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests?')
+        string(name: 'BUILD_VERSION', defaultValue: '1.0.0', description: 'Build version')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "Building version: ${params.BUILD_VERSION} for environment: ${params.ENV}"
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Run tests') {
+            when {
+                expression { return params.RUN_TESTS }
+            }
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build succeeded for version: ${params.BUILD_VERSION}"
+            archiveArtifacts artifacts: 'task-api/package.json', fingerprint: true
+        }
+        failure {
+            echo "Build failed for version: ${params.BUILD_VERSION}"
+        }
+        always {
+            echo "Build completed for version: ${params.BUILD_VERSION}"
+        }
+    }
+}
