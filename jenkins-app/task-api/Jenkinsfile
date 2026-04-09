@@ -55,9 +55,9 @@ pipeline {
 
         stage('Docker run') {
             steps {
-                sh "docker run -d -p 3000:3000 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "docker run -d -p 3001:3000 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
                 sh "sleep 3"
-                sh "curl -f http://localhost:3000/health"
+                sh "curl -f http://localhost:3001/health"
             }
         }
     }
