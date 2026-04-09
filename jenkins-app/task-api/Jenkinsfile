@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'ci' }
 
     options {
         disableConcurrentBuilds()
@@ -10,6 +10,11 @@ pipeline {
         choice(name: 'ENV', choices: ['dev', 'test'], description: 'Target environment')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests?')
         string(name: 'BUILD_VERSION', defaultValue: '1.0.0', description: 'Build version')
+    }
+
+    environment {
+        IMAGE_NAME = "task-api:local"
+        CONTAINER_NAME = "task-api-${BUILD_NUMBER}"
     }
 
     stages {
@@ -38,6 +43,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker build') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-registry-token', variable: 'REGISTRY_TOKEN')]) {
+                    sh "docker build -t ${IMAGE_NAME} jenkins-app/task-api/"
+                    echo "Image built."
+                }
+            }
+        }
+
+        stage('Docker run') {
+            steps {
+                sh "docker run -d -p 3000:3000 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                sh "sleep 3"
+                sh "curl -f http://localhost:3000/health"
+            }
+        }
     }
 
     post {
@@ -49,7 +71,9 @@ pipeline {
             echo "Build failed for version: ${params.BUILD_VERSION}"
         }
         always {
-            echo "Build completed for version: ${params.BUILD_VERSION}"
+            echo "Build completed with status: ${currentBuild.currentResult}"
+            sh "docker stop ${CONTAINER_NAME} || true"
+            sh "docker rm ${CONTAINER_NAME} || true"
         }
     }
 }
